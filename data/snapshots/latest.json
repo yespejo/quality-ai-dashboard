@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-06-19",
+  "pods": [
+    {
+      "name": "payments",
+
+      "health": [
+        {
+          "date": "2026-06-01",
+          "value": 8.1
+        },
+        {
+          "date": "2026-06-19",
+          "value": 8.5
+        }
+      ],
+
+      "coverage": [
+        {
+          "date": "2026-06-01",
+          "value": 80
+        },
+        {
+          "date": "2026-06-19",
+          "value": 87
+        }
+      ],
+
+      "security": {
+        "critical": [
+          {
+            "date": "2026-06-19",
+            "value": 2
+          }
+        ],
+        "high": [
+          {
+            "date": "2026-06-19",
+            "value": 5
+          }
+        ],
+        "medium": [
+          {
+            "date": "2026-06-19",
+            "value": 15
+          }
+        ]
+      }
+    }
+  ]
+}

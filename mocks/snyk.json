@@ -1,0 +1,7 @@
+{
+ "payments": {
+    "critical": 2,
+    "high": 5,
+    "medium": 10
+ }
+}

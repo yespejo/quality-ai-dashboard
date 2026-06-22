@@ -1,0 +1,13 @@
+{
+    "date": "2026-06-22",
+    "pods": [
+        {
+            "name": "payments",
+            "health": 8.5,
+            "coverage": 87,
+            "critical": 2,
+            "high": 5,
+            "medium": 10
+        }
+    ]
+}

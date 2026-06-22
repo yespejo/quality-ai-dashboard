@@ -1,0 +1,10 @@
+{
+ "payments": {
+    "health": 8.5,
+    "coverage": 87
+ },
+ "users": {
+    "health": 7.9,
+    "coverage": 91
+ }
+}
