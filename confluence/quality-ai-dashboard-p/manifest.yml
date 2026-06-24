@@ -1,0 +1,26 @@
+modules:
+  macro:
+    - key: quality-ai-dashboard-p-hello-world
+      resource: main
+      resolver:
+        function: resolver
+      title: quality-ai-dashboard-p
+      description: Inserts Hello world!
+  function:
+    - key: resolver
+      handler: index.handler
+resources:
+  - key: main
+    path: static/dashboard
+app:
+  runtime:
+    name: nodejs24.x
+    memoryMB: 256
+    architecture: arm64
+  id: ari:cloud:ecosystem::app/cbccebd7-cd6f-4b56-a20a-fef3a8772d8c
+permissions:
+  external:
+    fetch:
+      backend:
+        - address: https://raw.githubusercontent.com
+  scopes: []

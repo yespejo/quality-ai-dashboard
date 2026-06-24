@@ -1,0 +1,25 @@
+modules:
+  macro:
+    - key: quality-dashboard
+      resource: main
+      resolver:
+        function: resolver
+      title: Quality AI Dashboard
+      description: Quality AI Dashboard!
+  function:
+    - key: resolver
+      handler: index.handler
+resources:
+  - key: main
+    path: static/dashboard/dist
+app:
+  runtime:
+    name: nodejs24.x
+    memoryMB: 256
+    architecture: arm64
+  id: ari:cloud:ecosystem::app/c26baad1-a3e6-4ac9-961a-4397530c54f2
+permissions:
+  external:
+    fetch:
+      backend:
+        - address: https://raw.githubusercontent.com
