@@ -16,8 +16,6 @@ const COLOR = {
 
 // ─── Helper: initialise (or re-use) an ECharts instance ─────────────────────
 function initChart(el) {
-  // echarts.getInstanceByDom returns the existing instance if already created,
-  // which prevents the "dom already has a chart" warning on re-renders.
   return echarts.getInstanceByDom(el) || echarts.init(el, null, {
     width:  el.offsetWidth  || 700,
     height: el.offsetHeight || 280,
@@ -27,7 +25,6 @@ function initChart(el) {
 
 // ─── Chart components ────────────────────────────────────────────────────────
 
-// Single line chart for CodeScene health (0-10 scale).
 function HealthChart({ dates, values }) {
   const ref = useRef(null);
 
@@ -57,7 +54,6 @@ function HealthChart({ dates, values }) {
 }
 
 
-// Single line chart for CodeScene coverage (0-100 %).
 function CoverageChart({ dates, values }) {
   const ref = useRef(null);
 
@@ -87,7 +83,6 @@ function CoverageChart({ dates, values }) {
 }
 
 
-// Three-line chart for Snyk vulnerabilities (critical / high / medium).
 function SnykChart({ dates, critical, high, medium }) {
   const ref = useRef(null);
 
@@ -146,15 +141,67 @@ function Badge({ label, value, color, unit = "" }) {
 }
 
 
+// ─── Per-repo detail table ───────────────────────────────────────────────────
+function RepoTable({ repos }) {
+  if (!repos || repos.length === 0) return null;
+
+  const th = { padding: "8px 12px", textAlign: "left", fontSize: "12px",
+               fontWeight: "600", color: "#6B778C", borderBottom: "2px solid #e0e0e0" };
+  const td = { padding: "8px 12px", fontSize: "13px", borderBottom: "1px solid #f0f0f0" };
+
+  return (
+    <div style={{ ...cardStyle, marginTop: "16px", overflowX: "auto" }}>
+      <div style={{ fontWeight: "600", fontSize: "13px", color: "#172B4D", marginBottom: "10px" }}>
+        Repos breakdown
+      </div>
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <thead>
+          <tr>
+            <th style={th}>Repository</th>
+            <th style={{ ...th, textAlign: "right" }}>Health</th>
+            <th style={{ ...th, textAlign: "right" }}>Coverage</th>
+            <th style={{ ...th, textAlign: "right", color: COLOR.critical }}>Critical</th>
+            <th style={{ ...th, textAlign: "right", color: COLOR.high }}>High</th>
+            <th style={{ ...th, textAlign: "right", color: COLOR.medium }}>Medium</th>
+          </tr>
+        </thead>
+        <tbody>
+          {repos.map(repo => (
+            <tr key={repo.name}>
+              <td style={{ ...td, fontFamily: "monospace", fontSize: "12px" }}>{repo.name}</td>
+              <td style={{ ...td, textAlign: "right", color: COLOR.health, fontWeight: "600" }}>
+                {repo.codescene.health}
+              </td>
+              <td style={{ ...td, textAlign: "right", color: COLOR.coverage, fontWeight: "600" }}>
+                {repo.codescene.coverage}%
+              </td>
+              <td style={{ ...td, textAlign: "right", color: COLOR.critical, fontWeight: "600" }}>
+                {repo.snyk.critical}
+              </td>
+              <td style={{ ...td, textAlign: "right", color: COLOR.high, fontWeight: "600" }}>
+                {repo.snyk.high}
+              </td>
+              <td style={{ ...td, textAlign: "right", color: COLOR.medium, fontWeight: "600" }}>
+                {repo.snyk.medium}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+
 // ─── Single pod panel ────────────────────────────────────────────────────────
-function PodPanel({ podName, series }) {
+function PodPanel({ podName, series, latestPod }) {
   const { dates, codescene, snyk } = series;
   const last = i => Array.isArray(i) && i.length ? i[i.length - 1] : "—";
 
   return (
     <div style={{ padding: "0 4px" }}>
 
-      {/* Summary row */}
+      {/* Summary badges (pod-level aggregates) */}
       <div style={{ marginBottom: "20px" }}>
         <Badge label="Health"    value={last(codescene.health)}   color={COLOR.health}   />
         <Badge label="Coverage"  value={last(codescene.coverage)} color={COLOR.coverage} unit="%" />
@@ -163,7 +210,7 @@ function PodPanel({ podName, series }) {
         <Badge label="Medium"    value={last(snyk.medium)}        color={COLOR.medium}   />
       </div>
 
-      {/* Charts */}
+      {/* Trend charts */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
         <div style={cardStyle}>
           <HealthChart   dates={dates} values={codescene.health}   />
@@ -182,6 +229,9 @@ function PodPanel({ podName, series }) {
         />
       </div>
 
+      {/* Per-repo table from latest snapshot */}
+      {latestPod && <RepoTable repos={latestPod.repos} />}
+
     </div>
   );
 }
@@ -196,7 +246,7 @@ const cardStyle = {
 
 
 // ─── Tab bar ─────────────────────────────────────────────────────────────────
-function Tabs({ pods, active, onSelect }) {
+function TabBar({ pods, active, onSelect }) {
   return (
     <div style={{ display: "flex", borderBottom: "2px solid #e0e0e0", marginBottom: "20px" }}>
       {pods.map(pod => (
@@ -213,7 +263,6 @@ function Tabs({ pods, active, onSelect }) {
             fontWeight: active === pod ? "700" : "400",
             color: active === pod ? "#0052CC" : "#555",
             fontSize: "14px",
-            textTransform: "capitalize",
           }}
         >
           {pod}
@@ -226,30 +275,34 @@ function Tabs({ pods, active, onSelect }) {
 
 // ─── Root Dashboard ──────────────────────────────────────────────────────────
 function Dashboard() {
-  const [history, setHistory] = useState(null);
+  const [history, setHistory]   = useState(null);
+  const [latest, setLatest]     = useState(null);
   const [activeTab, setActiveTab] = useState(null);
-  const [error, setError]     = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [error, setError]       = useState(null);
+  const [loading, setLoading]   = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
-        const data = await invoke("getHistory");
+        // Fetch both history (for charts) and latest (for repo table) in parallel.
+        const [histData, latestData] = await Promise.all([
+          invoke("getHistory"),
+          invoke("getLatest"),
+        ]);
 
-        if (!data || !data.pods) {
-          setError("Resolver returned no data. Check that history.json is published to GitHub.");
+        if (!histData || !histData.pods) {
+          setError("Resolver returned no history data. Check that history.json is published to GitHub.");
           return;
         }
 
-        const pods = Object.keys(data.pods);
-        setHistory(data.pods);
+        const pods = Object.keys(histData.pods);
+        setHistory(histData.pods);
+        setLatest(latestData);
         setActiveTab(pods[0] || null);
       } catch (err) {
         setError(String(err?.message ?? err));
       } finally {
         setLoading(false);
-        // Tell Confluence to resize the iframe to fit the actual content height.
-        // We defer slightly so React has finished painting before we measure.
         setTimeout(() => view.resize(), 300);
       }
     }
@@ -290,12 +343,16 @@ function Dashboard() {
       {/* Dashboard content */}
       {!loading && !error && history && activeTab && (
         <>
-          <Tabs
+          <TabBar
             pods={Object.keys(history)}
             active={activeTab}
             onSelect={pod => { setActiveTab(pod); setTimeout(() => view.resize(), 300); }}
           />
-          <PodPanel podName={activeTab} series={history[activeTab]} />
+          <PodPanel
+            podName={activeTab}
+            series={history[activeTab]}
+            latestPod={latest?.pods?.find(p => p.name === activeTab)}
+          />
         </>
       )}
 

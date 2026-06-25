@@ -1,0 +1,15 @@
+[
+  {
+    "name": "AI POD 1",
+    "repos": [
+      { "name": "nx-bff-loyalty-customerhub", "projectId": "67203" },
+      { "name": "nx-al-comm-mercury-events",  "projectId": "67202" }
+    ]
+  },
+  {
+    "name": "AI POD 2",
+    "repos": [
+      { "name": "nx-bff-order-mobile", "projectId": "67204" }
+    ]
+  }
+]

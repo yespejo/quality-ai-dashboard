@@ -1,0 +1,7 @@
+# No third-party dependencies required.
+# The pipeline uses only Python standard library modules:
+#   - urllib.request / urllib.error  (HTTP calls to CodeScene and Snyk APIs)
+#   - json, os, dataclasses, datetime
+#
+# If you add new API clients that need external packages (e.g. requests, httpx),
+# list them here so `pip install -r requirements.txt` works in CI.

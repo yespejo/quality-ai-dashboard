@@ -179,6 +179,54 @@
                     6
                 ]
             }
+        },
+        "AI POD 1": {
+            "dates": [
+                "2026-06-25"
+            ],
+            "codescene": {
+                "health": [
+                    8.84
+                ],
+                "coverage": [
+                    90.21
+                ]
+            },
+            "snyk": {
+                "critical": [
+                    1
+                ],
+                "high": [
+                    5
+                ],
+                "medium": [
+                    13
+                ]
+            }
+        },
+        "AI POD 2": {
+            "dates": [
+                "2026-06-25"
+            ],
+            "codescene": {
+                "health": [
+                    7.8
+                ],
+                "coverage": [
+                    74.5
+                ]
+            },
+            "snyk": {
+                "critical": [
+                    2
+                ],
+                "high": [
+                    5
+                ],
+                "medium": [
+                    11
+                ]
+            }
         }
     }
 }
