@@ -94,15 +94,15 @@ def load_pod_config() -> list[dict]:
 # Replace each entry with real API values once the token is available.
 
 MOCK_CODESCENE: dict[str, CodeSceneMetrics] = {
-    "nx-bff-loyalty-customerhub": CodeSceneMetrics(health=9.17, coverage=99.42),
-    "nx-al-comm-mercury-events":  CodeSceneMetrics(health=8.50, coverage=81.00),
-    "nx-bff-order-mobile":        CodeSceneMetrics(health=7.80, coverage=74.50),
+    "Nx-bff-loyalty-customerhub": CodeSceneMetrics(health=9.17, coverage=99.42),
+    "Nx-al-comm-mercury-events":  CodeSceneMetrics(health=8.50, coverage=81.00),
+    "Nx-bff-order-mobile":        CodeSceneMetrics(health=7.80, coverage=74.50),
 }
 
 MOCK_SNYK: dict[str, SnykMetrics] = {
-    "nx-bff-loyalty-customerhub": SnykMetrics(critical=0, high=2, medium=5),
-    "nx-al-comm-mercury-events":  SnykMetrics(critical=1, high=3, medium=8),
-    "nx-bff-order-mobile":        SnykMetrics(critical=2, high=5, medium=11),
+    "Nx-bff-loyalty-customerhub": SnykMetrics(critical=0, high=2, medium=5),
+    "Nx-al-comm-mercury-events":  SnykMetrics(critical=1, high=3, medium=8),
+    "Nx-bff-order-mobile":        SnykMetrics(critical=2, high=5, medium=11),
 }
 
 # Fallback values used for any repo not listed above.
